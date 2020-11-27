@@ -15,7 +15,7 @@ def server():
 
     while True:
         client, address = s.accept()
-        print(address[0], "has joined on port:", address[1])
+        print(address[0], "has joined")
 
         received_data(client.recv(BUFFER_SIZE))
 
