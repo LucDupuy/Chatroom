@@ -2,11 +2,10 @@ import socket
 import threading
 from pynput.keyboard import Key, Listener
 
-HOST = socket.gethostname()
+HOST = "0.0.0.0"
 PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
-
 
 clients = []
 usernames = []

@@ -2,7 +2,7 @@ import socket
 import threading
 import tkinter.messagebox
 
-HOST = "ROGUEONE"
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 
