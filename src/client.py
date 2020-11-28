@@ -1,45 +1,43 @@
 import socket
+import threading
 
 HOST = socket.gethostname()
 PORT = 1127
 BUFFER_SIZE = 1024
 
+# IPV4, TCP
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((HOST, PORT))
+username = input("Please enter your username: ")
+
+
 
 def client():
-    USER = input("Enter your username: ")
+    while True:
+        try:
+            msg = client.recv(BUFFER_SIZE).decode()
+            if msg == "USERNAME":
+                client.send(username.encode())
+            else:
+                # Seeing what the server has to say
+                print(msg)
+        except:
+            print("Error occurred.")
+            client.close()
+            break
 
-    server_socket = setup(username=USER)
 
+
+
+def send_data():
 
     while True:
-        user_input = input(USER + ": ")
-        data = USER + ": " + user_input
-
-        send_data(data, server=server_socket)
-        received_data(server_socket.recv(BUFFER_SIZE))
+        msg = f'{username}: {input()}'
+        client.send(msg.encode())
 
 
-def setup(username):
+read_thread = threading.Thread(target=client)
+read_thread.start()
 
-    # IPV4, TCP
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, PORT))
-
-    data = username + ": Hello Server"
-    send_data(data, server=s)
-    received_data(s.recv(BUFFER_SIZE))
-
-    return s
-
-
-def send_data(data, server):
-    # Encode turns the string into bytes
-    server.send(data.encode())
-
-
-def received_data(data):
-    print(data.decode())
-
-
-if __name__ == '__main__':
-    client()
+write_thread = threading.Thread(target=send_data)
+write_thread.start()

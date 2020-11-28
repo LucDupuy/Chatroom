@@ -1,4 +1,5 @@
 import socket
+import threading
 from pynput.keyboard import Key, Listener
 
 HOST = socket.gethostname()
@@ -6,44 +7,50 @@ PORT = 1127
 NUM_CONNECTIONS = 3
 BUFFER_SIZE = 1024
 
+clients = []
+usernames = []
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST, PORT))
+s.listen(NUM_CONNECTIONS)
+
+
+def handle(client):
+    while True:
+        try:
+            data = client.recv(BUFFER_SIZE)
+            send_data(msg=data)
+        except:
+            client_idx = clients.index(client)
+            clients.remove(client_idx)
+            username = usernames.index(client_idx)
+            data = "", username, " left the chat.".encode()
+            send_data(data)
+            usernames.remove(client_idx)
+            break
+
+
+def send_data(msg):
+    for client in clients:
+        client.send(msg.encode())
+
 
 def server():
-    USER = input("Enter your username: ")
-
-    # IPV4, TCP
-
-    client, address = setup(username=USER)
-
 
     while True:
-        user_input = input(USER + ": ")
-        data = USER + ": " + user_input
-        send_data(data, client=client)
+        client, address = s.accept()
+        print(f"{address} has connected.")
+        client.send("USERNAME".encode())
+        username = client.recv(1024).decode()
+        usernames.append(username)
+        clients.append(client)
 
-        received_data(client.recv(BUFFER_SIZE))
-
-
-def setup(username):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
-    s.listen(NUM_CONNECTIONS)
-    client, address = s.accept()
-    print(address[0], "has joined")
-    received_data(client.recv(BUFFER_SIZE))
-    data = username + ": Thank you for connecting to my server"
-    send_data(data, client=client)
-
-    return client, address
+        send_data(f"{username} has joined the chat.")
+        client.send("Connected to server".encode())
 
 
-def send_data(data, client):
-    # Encode turns the string into bytes
-
-    client.send(data.encode())
-
-
-def received_data(data):
-    print(data.decode())
+        thread = threading.Thread(target=handle, args=(client, ))
+        thread.start()
 
 
 if __name__ == '__main__':
