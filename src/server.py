@@ -4,8 +4,9 @@ from pynput.keyboard import Key, Listener
 
 HOST = socket.gethostname()
 PORT = 1127
-NUM_CONNECTIONS = 3
+NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
+
 
 clients = []
 usernames = []
@@ -15,41 +16,47 @@ s.bind((HOST, PORT))
 s.listen(NUM_CONNECTIONS)
 
 
+def send_data(msg):
+    for client in clients:
+        client.send(msg)
+
+
 def handle(client):
     while True:
         try:
             data = client.recv(BUFFER_SIZE)
-            send_data(msg=data)
+            send_data(data)
         except:
             client_idx = clients.index(client)
-            clients.remove(client_idx)
-            username = usernames.index(client_idx)
-            data = "", username, " left the chat.".encode()
-            send_data(data)
-            usernames.remove(client_idx)
+            del clients[client_idx]
+            client.close()
+            username = usernames[client_idx]
+            data = f'{username} left the chat.'
+            print(f'{username} disconnected from the server.')
+            send_data(data.encode())
+            del usernames[client_idx]
             break
 
 
-def send_data(msg):
-    for client in clients:
-        client.send(msg.encode())
-
-
 def server():
-
     while True:
         client, address = s.accept()
-        print(f"{address} has connected.")
         client.send("USERNAME".encode())
-        username = client.recv(1024).decode()
-        usernames.append(username)
-        clients.append(client)
+        try:
+            username = client.recv(1024).decode()
+            usernames.append(username)
+        except:
+            print("User closed connection")
 
-        send_data(f"{username} has joined the chat.")
+
+        clients.append(client)
+        print("Number of Users Connected: ", len(clients))
+        print(f"{username} has connected.")
+
+        send_data(f"{username} has joined the chat.".encode())
         client.send("Connected to server".encode())
 
-
-        thread = threading.Thread(target=handle, args=(client, ))
+        thread = threading.Thread(target=handle, args=(client,))
         thread.start()
 
 

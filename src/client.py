@@ -1,13 +1,22 @@
 import socket
 import threading
+import tkinter.messagebox
 
-HOST = socket.gethostname()
+HOST = "ROGUEONE"
 PORT = 1127
 BUFFER_SIZE = 1024
 
 # IPV4, TCP
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_sock.connect((HOST, PORT))
+
+try:
+    server_sock.connect((HOST, PORT))
+except:
+    root = tkinter.Tk()
+    root.overrideredirect(1)
+    root.withdraw()
+    tkinter.messagebox.showinfo("Error", "Server is offline")
+    exit(0)
 username = input("Please enter your username: ")
 
 
@@ -21,17 +30,15 @@ def client():
                 # Seeing what the server has to say
                 print(msg)
         except:
-            print("Error occurred.")
+            print("Server has gone offline.")
             server_sock.close()
+          #  exit(0)
             break
 
 
-
-
 def send_data():
-
     while True:
-        msg = f'{username}: {input()}'
+        msg = username + ": " + input()
         server_sock.send(msg.encode())
 
 
