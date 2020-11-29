@@ -1,6 +1,6 @@
 import socket
 import threading
-from pynput.keyboard import Key, Listener
+
 
 HOST = "0.0.0.0"
 PORT = 7267
