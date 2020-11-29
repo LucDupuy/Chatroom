@@ -3,7 +3,7 @@ import threading
 from pynput.keyboard import Key, Listener
 
 HOST = "0.0.0.0"
-PORT = 1127
+PORT = 7267
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 
