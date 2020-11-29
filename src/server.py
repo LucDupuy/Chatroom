@@ -3,7 +3,7 @@ import threading
 
 
 HOST = "0.0.0.0"
-PORT = 1127
+PORT = 21
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 
@@ -16,6 +16,11 @@ s.listen(NUM_CONNECTIONS)
 print("Server listening......")
 
 
+def send_data(msg, idx):
+    for client in clients:
+        if clients.index(client) != idx:
+            client.send(msg)
+
 def send_data(msg):
     for client in clients:
         client.send(msg)
@@ -25,7 +30,7 @@ def handle(client):
     while True:
         try:
             data = client.recv(BUFFER_SIZE)
-            send_data(data)
+            send_data(data, clients.index(client))
         except:
             client_idx = clients.index(client)
             del clients[client_idx]
@@ -62,3 +67,9 @@ def server():
 
 if __name__ == '__main__':
     server()
+
+
+# Message to not display twice
+# Message from another shouldn't interrupt your typing
+# Connected to server then list all in room
+# No empty messages
