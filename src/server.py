@@ -56,7 +56,7 @@ def server():
 
         send_data(f"{username} has joined the chat.".encode())
 
-        list_online()
+        send_data(list_online())
 
         client.send("Connected to server".encode())
 
@@ -73,6 +73,7 @@ def list_online():
     for username in usernames:
         data += username + "\n"
 
+    return data
 
 if __name__ == '__main__':
     server()
