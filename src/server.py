@@ -15,10 +15,16 @@ s.listen(NUM_CONNECTIONS)
 print("Server listening......")
 
 
-def send_data_to_all_but_current(msg, idx):
+
+
+def send_data_to_select_people(msg, idx, only_current):
     for client in clients:
-        if clients.index(client) == idx:
-            client.send(msg)
+        if only_current:
+            if clients.index(client) == idx:
+                client.send(msg)
+        else:
+            if clients.index(client) != idx:
+                client.send(msg)
 
 
 def send_data(msg):
@@ -30,7 +36,10 @@ def handle(client):
     while True:
         try:
             data = client.recv(BUFFER_SIZE)
-            send_data(data)
+            if data.decode().__contains__("#users"):
+                send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
+            else:
+                send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
             client_idx = clients.index(client)
             del clients[client_idx]
@@ -59,7 +68,7 @@ def server():
 
         send_data(f"{username} has joined the chat.".encode())
 
-        send_data_to_all_but_current(list_online().encode(), clients.index(client))
+        send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
 
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
@@ -78,6 +87,8 @@ def list_online():
 if __name__ == '__main__':
     server()
 
-# Message to not display twice
+
 # Message from another shouldn't interrupt your typing
 # Handle exception when server closes and user still on
+# Suppress not a trusted source from windows
+# No port forwarding

@@ -1,4 +1,4 @@
 import socket
 
 
-print(socket.gethostbyname("ROGUEONE"))
+print(socket.gethostname())
