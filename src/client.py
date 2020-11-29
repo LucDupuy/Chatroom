@@ -2,7 +2,8 @@ import socket
 import threading
 import tkinter.messagebox
 
-HOST = socket.gethostbyname("ilkka.ddns.net")
+# HOST = socket.gethostbyname("ilkka.ddns.net")
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 
@@ -39,7 +40,8 @@ def client():
 def send_data():
     while True:
         msg = username + ": " + input()
-        server_sock.send(msg.encode())
+        if len(msg) > (len(username) + 2):
+            server_sock.send(msg.encode())
 
 
 read_thread = threading.Thread(target=client)
