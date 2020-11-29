@@ -3,7 +3,7 @@ import threading
 import tkinter.messagebox
 
 HOST = socket.gethostbyname("ilkka.ddns.net")
-PORT = 7267
+PORT = 1127
 BUFFER_SIZE = 1024
 
 # IPV4, TCP

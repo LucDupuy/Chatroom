@@ -3,7 +3,7 @@ import threading
 
 
 HOST = "0.0.0.0"
-PORT = 7267
+PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 
