@@ -3,7 +3,7 @@ import threading
 
 
 HOST = "0.0.0.0"
-PORT = 21
+PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 
@@ -16,10 +16,6 @@ s.listen(NUM_CONNECTIONS)
 print("Server listening......")
 
 
-def send_data(msg, idx):
-    for client in clients:
-        if clients.index(client) != idx:
-            client.send(msg)
 
 def send_data(msg):
     for client in clients:
@@ -30,7 +26,7 @@ def handle(client):
     while True:
         try:
             data = client.recv(BUFFER_SIZE)
-            send_data(data, clients.index(client))
+            send_data(data)
         except:
             client_idx = clients.index(client)
             del clients[client_idx]
@@ -59,10 +55,21 @@ def server():
         print(f"{username} has connected.")
 
         send_data(f"{username} has joined the chat.".encode())
+
+        list_online()
+
         client.send("Connected to server".encode())
 
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
+
+
+
+def list_online():
+    print("Users Currently Online\n")
+    print("**********************")
+    for username in usernames:
+        print(username + "\n")
 
 
 if __name__ == '__main__':
