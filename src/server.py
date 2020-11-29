@@ -66,10 +66,12 @@ def server():
 
 
 def list_online():
-    print("Users Currently Online\n")
-    print("**********************")
+
+    data = ""
+    data += "Users Currently Online\n"
+    data += "**********************\n"
     for username in usernames:
-        print(username + "\n")
+        data += username + "\n"
 
 
 if __name__ == '__main__':
