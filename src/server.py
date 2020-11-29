@@ -56,7 +56,7 @@ def server():
 
         send_data(f"{username} has joined the chat.".encode())
 
-        send_data(list_online())
+        send_data(list_online().encode())
 
         client.send("Connected to server".encode())
 
