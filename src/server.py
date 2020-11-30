@@ -16,7 +16,7 @@ usernames = []
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(NUM_CONNECTIONS)
-print(DATETIME)
+print("\n" + DATETIME)
 print("--------------------")
 print("\nServer listening.....")
 
