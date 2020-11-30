@@ -61,6 +61,7 @@ def server():
             usernames.append(username)
         except:
             print("User closed connection")
+            continue
 
         clients.append(client)
         print("Number of Users Connected: ", len(clients))
@@ -92,5 +93,4 @@ if __name__ == '__main__':
 # Suppress not a trusted source from windows
 # No port forwarding
 # Keep server running in background after exiting shell
-# Server closes if user connects then closes without logging in
 # Voice
