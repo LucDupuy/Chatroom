@@ -4,6 +4,7 @@ import pyaudio
 from datetime import datetime
 
 HOST = "0.0.0.0"
+# TODO: Remove port forwarding
 PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
@@ -98,9 +99,7 @@ if __name__ == '__main__':
     server()
 
 
-# Message from another shouldn't interrupt your typing
-# Suppress not a trusted source from windows
-# No port forwarding
-# Keep server running in background after exiting shell
-# force close of server throws error
-# Voice
+# TODO: Message from another shouldn't interrupt your typing
+# TODO: Suppress not a trusted source from windows
+# TODO: force close of server throws error (have a nicer quit command?)
+# TODO: Implement Voice
