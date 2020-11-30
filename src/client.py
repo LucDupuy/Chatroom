@@ -1,10 +1,11 @@
 import sys
 import socket
+import pyaudio
 import threading
 import tkinter.messagebox
 
-# HOST = socket.gethostbyname("ilkka.ddns.net")
-HOST = socket.gethostbyname("ROGUEONE")
+HOST = socket.gethostbyname("ilkka.ddns.net")
+# HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 

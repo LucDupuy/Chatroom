@@ -1,10 +1,14 @@
 import socket
 import threading
+import pyaudio
+from datetime import datetime
 
 HOST = "0.0.0.0"
 PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
+DATETIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
 
 clients = []
 usernames = []
@@ -12,8 +16,9 @@ usernames = []
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(NUM_CONNECTIONS)
-print("Server listening......")
-
+print(DATETIME)
+print("--------------------")
+print("\nServer listening.....")
 
 
 
@@ -93,4 +98,5 @@ if __name__ == '__main__':
 # Suppress not a trusted source from windows
 # No port forwarding
 # Keep server running in background after exiting shell
+# force close of server throws error
 # Voice
