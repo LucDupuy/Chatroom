@@ -1,9 +1,10 @@
+import sys
 import socket
 import threading
 import tkinter.messagebox
 
-HOST = socket.gethostbyname("ilkka.ddns.net")
-# HOST = socket.gethostbyname("ROGUEONE")
+# HOST = socket.gethostbyname("ilkka.ddns.net")
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 
@@ -32,25 +33,23 @@ def client():
                 # Seeing what the server has to say
                 print(msg)
         except:
-            print("Server has gone offline.")
             server_sock.close()
-          #  exit(0)
-            break
+            exit(0)
+
+
 
 
 def send_data():
     while True:
-        msg = username + ": " + input()
-        if len(msg) > (len(username) + 2):
-            server_sock.send(msg.encode())
+        try:
+            msg = username + ": " + input()
+            if len(msg) > (len(username) + 2):
+                server_sock.send(msg.encode())
+        except:
+            server_sock.close()
+            print("Server has gone offline")
+            exit(0)
 
-
-"""def send_data():
-    while True:
-        msg = input(username + ": ")
-        if len(msg) > 0:
-            data = username + ": " + msg
-            server_sock.send(data.encode())"""
 
 
 read_thread = threading.Thread(target=client)

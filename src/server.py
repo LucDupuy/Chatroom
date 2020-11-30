@@ -89,6 +89,8 @@ if __name__ == '__main__':
 
 
 # Message from another shouldn't interrupt your typing
-# Handle exception when server closes and user still on
 # Suppress not a trusted source from windows
 # No port forwarding
+# Keep server running in background after exiting shell
+# Server closes if user connects then closes without logging in
+# Voice
