@@ -59,8 +59,12 @@ def handle(client):
 
 def server():
     while True:
-        client, address = s.accept()
-        client.send("USERNAME".encode())
+        try:
+            client, address = s.accept()
+            client.send("USERNAME".encode())
+        except:
+            print("Keyboard Interruption: Server closing.")
+            exit(0)
         try:
             username = client.recv(1024).decode()
             usernames.append(username)
