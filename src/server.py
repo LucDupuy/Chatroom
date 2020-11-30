@@ -101,5 +101,4 @@ if __name__ == '__main__':
 
 # TODO: Message from another shouldn't interrupt your typing
 # TODO: Suppress not a trusted source from windows
-# TODO: force close of server throws error (have a nicer quit command?)
 # TODO: Implement Voice
