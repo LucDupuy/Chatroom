@@ -103,3 +103,4 @@ if __name__ == '__main__':
 # TODO: Message from another shouldn't interrupt your typing
 # TODO: Suppress not a trusted source from windows
 # TODO: Implement Voice
+# TODO: How to push updateS?
