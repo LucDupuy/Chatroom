@@ -52,7 +52,7 @@ def handle(client):
             client.close()
             username = usernames[client_idx]
             data = f'{username} left the chat.'
-            print(f'{username} disconnected from the server.')
+        #    print(f'{username} disconnected from the server.')
             send_data(data.encode())
             del usernames[client_idx]
             break
@@ -74,8 +74,8 @@ def server():
             continue
 
         clients.append(client)
-        print("Number of Users Connected: ", len(clients))
-        print(f"{username} has connected.")
+   #     print("Number of Users Connected: ", len(clients))
+   #     print(f"{username} has connected.")
 
         send_data(f"{username} has joined the chat.".encode())
 
