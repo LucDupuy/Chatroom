@@ -64,7 +64,8 @@ def server():
             client, address = s.accept()
             client.send("USERNAME".encode())
         except:
-            print("Keyboard Interruption: Server closing.")
+            TIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            print("Keyboard Interruption: Server closing.\n" + TIME)
             exit(0)
         try:
             username = client.recv(1024).decode()
