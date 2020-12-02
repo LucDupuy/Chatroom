@@ -6,7 +6,7 @@ import tkinter.messagebox
 
 HOST = socket.gethostbyname("ilkka.ddns.net")
 # HOST = socket.gethostbyname("ROGUEONE")
-PORT = 1127
+PORT = 80
 BUFFER_SIZE = 1024
 
 # IPV4, TCP
