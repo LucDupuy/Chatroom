@@ -13,6 +13,11 @@ FILENAME = "output.wav"
 
 
 def main():
+    # rec_pyaudio()
+    rec_sd()
+
+
+def rec_pyaudio():
     p = pyaudio.PyAudio()
 
     print("Recording")
@@ -38,13 +43,26 @@ def main():
     p.terminate()
     print("Finished Recording")
     play_stream(arr)
-    #save(arr)
+    # save(arr, p)
+
+
+def rec_sd():
+    recording = sd.rec(SECONDS*SAMPLE_FREQ, samplerate=SAMPLE_FREQ, channels=CHANNELS, dtype='float64')
+    print("Recording")
+    sd.wait()
+    print("Finished Recording")
+    print("Playing Recording")
+    print(recording)
+    sd.play(recording, SAMPLE_FREQ)
+    sd.wait()
+    print("Finished")
+
 
 
 def play_stream(data_array):
     sd.play(data_array, SAMPLE_FREQ)
 
-def save(data_array):
+def save(data_array, p):
     # Save as WAV
     file = wave.open(FILENAME, 'wb')
     file.setnchannels(CHANNELS)
