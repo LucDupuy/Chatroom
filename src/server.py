@@ -5,15 +5,11 @@ import esky
 import sys
 from datetime import datetime
 
-
-
-
 HOST = "0.0.0.0"
-PORT = 1127
+PORT = 80
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 DATETIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
 
 clients = []
 usernames = []
@@ -24,7 +20,6 @@ s.listen(NUM_CONNECTIONS)
 print("\n\n" + DATETIME)
 print("--------------------")
 print("\nServer listening.....")
-
 
 
 def send_data_to_select_people(msg, idx, only_current):
@@ -48,6 +43,9 @@ def handle(client):
             data = client.recv(BUFFER_SIZE)
             if data.decode().__contains__("#users"):
                 send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
+            elif data.decode().__contains__("#voice"):
+                client.send("VOICE".encode())
+                voice(client)
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
@@ -80,7 +78,6 @@ def server():
 
         clients.append(client)
 
-
         send_data(f"{username} has joined the chat.".encode())
 
         send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
@@ -99,9 +96,16 @@ def list_online():
     return data
 
 
+def voice(client):
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp_socket.bind((HOST, PORT))
+    data = client.recv(BUFFER_SIZE)
+    print("UDP MSG: ", data)
+
+
+
 if __name__ == '__main__':
     server()
-
 
 # TODO: Implement Voice
 # TODO: How to push updates?

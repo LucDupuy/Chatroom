@@ -4,8 +4,8 @@ import pyaudio
 import threading
 import tkinter.messagebox
 
-HOST = socket.gethostbyname("ilkka.ddns.net")
-# HOST = socket.gethostbyname("ROGUEONE")
+# HOST = socket.gethostbyname("ilkka.ddns.net")
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
 BUFFER_SIZE = 1024
 
@@ -30,6 +30,10 @@ def client():
             msg = server_sock.recv(BUFFER_SIZE).decode()
             if msg == "USERNAME":
                 server_sock.send(username.encode())
+
+            #TODO: Remove this to just check if input from user is #voice?
+            elif msg == "VOICE":
+                voice()
             else:
                 # Seeing what the server has to say
                 print(msg)
@@ -53,8 +57,21 @@ def send_data():
 
 
 
+
+def voice():
+    udp__socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+
+
+
 read_thread = threading.Thread(target=client)
 read_thread.start()
 
 write_thread = threading.Thread(target=send_data)
 write_thread.start()
+
+voice_thread = threading.Thread(target=voice)
+voice_thread.start()
+
+
+# TODO: Do I need threading for UDP?
