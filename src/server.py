@@ -1,7 +1,12 @@
 import socket
 import threading
 import pyaudio
+import esky
+import sys
 from datetime import datetime
+
+
+
 
 HOST = "0.0.0.0"
 PORT = 1127
@@ -98,7 +103,7 @@ if __name__ == '__main__':
     server()
 
 
-# TODO: Message from another shouldn't interrupt your typing
-# TODO: Suppress not a trusted source from windows
 # TODO: Implement Voice
 # TODO: How to push updates?
+# TODO: Message from another shouldn't interrupt your typing
+# TODO: Suppress not a trusted source from windows
