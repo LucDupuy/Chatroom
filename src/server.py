@@ -1,8 +1,5 @@
 import socket
 import threading
-import pyaudio
-import esky
-import sys
 from datetime import datetime
 
 HOST = "0.0.0.0"
@@ -44,8 +41,7 @@ def handle(client):
             if data.decode().__contains__("#users"):
                 send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
             elif data.decode().__contains__("#voice"):
-                client.send("VOICE".encode())
-                voice(client)
+                print("IMPLEMENT VOICE")
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
@@ -96,18 +92,10 @@ def list_online():
     return data
 
 
-def voice(client):
-    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_socket.bind((HOST, PORT))
-    data = client.recv(BUFFER_SIZE)
-    print("UDP MSG: ", data)
-
-
-
 if __name__ == '__main__':
     server()
 
-# TODO: Implement Voice
+# TODO: Implement Voice -> REMOVE ALL UDP FROM HERE AND USE SEPARATE PROGRAM
 # TODO: How to push updates?
 # TODO: Message from another shouldn't interrupt your typing
 # TODO: Suppress not a trusted source from windows
