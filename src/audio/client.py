@@ -1,36 +1,43 @@
 import socket
-import sys
-import threading
+import pyaudio
 import tkinter
 import tkinter.messagebox
-from threading import Thread
-import pyaudio
-import sounddevice as sd
-import numpy as np
 
-CHUNK = 1024 * 2
-BIT_DEPTH = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-
+# Socket
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
-
+CHUNK = 2048
+BIT_DEPTH = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
 client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-def client():
+def client(stream):
+    try:
+        client_sock.connect((HOST, PORT))
+    except socket.error:
+        root = tkinter.Tk()
+        root.overrideredirect(1)
+        root.withdraw()
+        tkinter.messagebox.showinfo("Error", "Error connecting to voice channel")
+        exit(0)
+
+    while True:
+        data = client_sock.recv(CHUNK)
+        stream.write(data)
+
+
+def main():
+
+    # Audio
     p = pyaudio.PyAudio()
+
     stream = p.open(format=BIT_DEPTH, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=CHUNK)
-
-    with socket.socket() as client_socket:
-        client_socket.connect((HOST, PORT))
-        print(client_socket.recv(2048).decode('utf-8'))
-        while True:
-            data = client_socket.recv(CHUNK)
-            stream.write(data)
+    client(stream)
 
 
-if __name__ == "__main__":
-    client()
+
+if __name__ == '__main__':
+    main()
