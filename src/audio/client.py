@@ -3,7 +3,6 @@ import pyaudio
 import tkinter
 import tkinter.messagebox
 
-# Socket
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
@@ -39,5 +38,3 @@ def main():
 
 
 
-if __name__ == '__main__':
-    main()
