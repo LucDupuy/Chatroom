@@ -1,10 +1,7 @@
-import sys
 import socket
-import pyaudio
 import threading
 import tkinter.messagebox
-import sounddevice as sd
-import numpy as np
+import voice_c as vc
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
@@ -32,6 +29,9 @@ def client():
             msg = server_sock.recv(BUFFER_SIZE).decode()
             if msg == "USERNAME":
                 server_sock.send(username.encode())
+
+            elif msg == "VOICE":
+               vc.client()
 
             else:
                 # Seeing what the server has to say
