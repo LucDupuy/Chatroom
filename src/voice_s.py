@@ -2,59 +2,49 @@ import socket
 import pyaudio
 import threading
 
-# Socket
-HOST = socket.gethostbyname(socket.gethostname())
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
-SERVER_ADDRESS = HOST + ':' + str(PORT)
-CONNECTED_CLIENTS = []
+server_sock = socket.socket()
+clients = []
 
-# Audio
-p = pyaudio.PyAudio()
-CHUNK = 1024 * 2
+BUFFER_SIZE = 2048
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+p = pyaudio.PyAudio()
+stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
 
 
 def client_listener(host_socket):
     while True:
         try:
+            # THIS IS THE PROBLEM LINE
             connection, address = host_socket.accept()
-            handle_client_thread = threading.Thread(target=handle_client, args=(connection, address))
-            handle_client_thread.start()
-            CONNECTED_CLIENTS.append(connection)
-            print(CONNECTED_CLIENTS)
-            print('Connection from ' + address[0] + ':' + str(address[1]))
-        except KeyboardInterrupt:
-            pass
+            clients.append(connection)
+        except socket.error as e:
+            print(e)
+            exit(0)
 
 
-def handle_client(client, client_address):
-    client.send(f'Connected to {SERVER_ADDRESS}'.encode('utf-8'))
-    pass
-
-
-with socket.socket() as server_socket:
+def server():
     try:
-        server_socket.bind((HOST, PORT))
-        server_socket.listen()
-        print('[Server hosted at ' + SERVER_ADDRESS + ']')
+        server_sock.bind((HOST, PORT))
+        server_sock.listen()
 
-        # Creates a separate thread for listening for clients
-        client_listener_thread = threading.Thread(target=client_listener, args=(server_socket,))
+        client_listener_thread = threading.Thread(target=client_listener, args=(server_sock,))
         client_listener_thread.start()
-        print('Listening for clients...')
 
-        # Records and sends microphone input to connected clients (the main thread)
         while True:
-            microphone_input = stream.read(CHUNK)
+            mic_in = stream.read(BUFFER_SIZE)
 
-            for client in CONNECTED_CLIENTS:
-                client.send(microphone_input)
+            for client in clients:
+                client.send(mic_in)
     except socket.error as error:
         print(str(error))
+
+
+if __name__ == '__main__':
+    server()
+
+# TODO: Currently this is TCP, not UDP
+# TODO: Deal with multiple clients
