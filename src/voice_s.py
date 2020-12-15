@@ -1,38 +1,60 @@
 import socket
 import pyaudio
 import threading
-from datetime import datetime
 
-HOST = "0.0.0.0"
+# Socket
+HOST = socket.gethostbyname(socket.gethostname())
 PORT = 80
-NUM_CONNECTIONS = 5
-BUFFER_SIZE = 2048
+SERVER_ADDRESS = HOST + ':' + str(PORT)
+CONNECTED_CLIENTS = []
 
-BIT_DEPTH = pyaudio.paInt16
+# Audio
+p = pyaudio.PyAudio()
+CHUNK = 1024 * 2
+FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
-
-clients = []
-
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-s.bind((HOST, PORT))
-
-p = pyaudio.PyAudio()
-stream = p.open(format=BIT_DEPTH, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
+stream = p.open(format=FORMAT,
+                channels=CHANNELS,
+                rate=RATE,
+                input=True,
+                frames_per_buffer=CHUNK)
 
 
-while True:
-    data, addr = s.recvfrom(BUFFER_SIZE)
-    if addr not in clients:
-        clients.append(addr)
+def client_listener(host_socket):
+    while True:
+        try:
+            connection, address = host_socket.accept()
+            handle_client_thread = threading.Thread(target=handle_client, args=(connection, address))
+            handle_client_thread.start()
+            CONNECTED_CLIENTS.append(connection)
+            print(CONNECTED_CLIENTS)
+            print('Connection from ' + address[0] + ':' + str(address[1]))
+        except KeyboardInterrupt:
+            pass
 
-    for client in clients:
-        if client != addr:
-            s.sendto(data, client)
+
+def handle_client(client, client_address):
+    client.send(f'Connected to {SERVER_ADDRESS}'.encode('utf-8'))
+    pass
 
 
+with socket.socket() as server_socket:
+    try:
+        server_socket.bind((HOST, PORT))
+        server_socket.listen()
+        print('[Server hosted at ' + SERVER_ADDRESS + ']')
 
+        # Creates a separate thread for listening for clients
+        client_listener_thread = threading.Thread(target=client_listener, args=(server_socket,))
+        client_listener_thread.start()
+        print('Listening for clients...')
 
+        # Records and sends microphone input to connected clients (the main thread)
+        while True:
+            microphone_input = stream.read(CHUNK)
 
-
+            for client in CONNECTED_CLIENTS:
+                client.send(microphone_input)
+    except socket.error as error:
+        print(str(error))

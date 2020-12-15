@@ -1,47 +1,33 @@
 import socket
 import pyaudio
-import threading
 import tkinter
-import tkinter.messagebox
+from tkinter import messagebox
 
-# HOST = socket.gethostbyname("ilkka.ddns.net")
-SERVER_HOST = socket.gethostbyname("ROGUEONE")
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
+
 BUFFER_SIZE = 2048
-BIT_DEPTH = pyaudio.paInt16
+FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
-client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client_sock.bind((SERVER_HOST, PORT))
 
 
-def get_data():
+client_sock = socket.socket()
 
-    while True:
-        try:
-            data, _ = client_sock.recvfrom(BUFFER_SIZE)
-            print(data.decode())
-        except socket.error:
-            pass
-
-
-
-def client():
-    p = pyaudio.PyAudio()
-
-    stream = p.open(format=BIT_DEPTH, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
-
-    while True:
-        data = client_sock.recv(BUFFER_SIZE)
-        stream.write(data)
+try:
+    client_sock.connect((HOST, PORT))
+except:
+    root = tkinter.Tk()
+    root.overrideredirect(1)
+    root.withdraw()
+    tkinter.messagebox.showinfo("Error", "Server is offline")
+    exit(0)
 
 
+p = pyaudio.PyAudio()
+stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
 
 
-read_thread = threading.Thread(target=client)
-read_thread.start()
-
-
-write_thread = threading.Thread(target=get_data)
-write_thread.start()
-
+while True:
+    data = client_sock.recv(BUFFER_SIZE)
+    stream.write(data)
