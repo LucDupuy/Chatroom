@@ -1,46 +1,50 @@
 import socket
-import pyaudio
 import threading
 
+# HOST = 0.0.0.0
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
-server_sock = socket.socket()
+BUFFER_SIZE = 2048
+
+
 clients = []
 
-BUFFER_SIZE = 2048
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-p = pyaudio.PyAudio()
-stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind((HOST, PORT))
 
 
-def client_listener(host_socket):
+
+def send_data_to_select_people(msg, idx):
+    for client in clients:
+     #   if clients.index(client) != idx:
+            client.send(msg)
+
+
+def handle(client):
     while True:
         try:
-            # THIS IS THE PROBLEM LINE
-            connection, address = host_socket.accept()
-            clients.append(connection)
-        except socket.error as e:
-            print(e)
-            exit(0)
-
+            data = client.recv(BUFFER_SIZE)
+            send_data_to_select_people(data, clients.index(client))
+        except socket.error:
+            client_idx = clients.index(client)
+            del clients[client_idx]
+            client.close()
+            break
 
 def server():
-    try:
-        server_sock.bind((HOST, PORT))
-        server_sock.listen()
+    while True:
+        try:
+            client, address = s.recvfrom(BUFFER_SIZE)
+            clients.append(client)
+            thread = threading.Thread(target=handle, args=(client,))
+            thread.start()
+        except socket.error as e:
+            print("Receiving: ", e)
+            pass
 
-        client_listener_thread = threading.Thread(target=client_listener, args=(server_sock,))
-        client_listener_thread.start()
 
-        while True:
-            mic_in = stream.read(BUFFER_SIZE)
 
-            for client in clients:
-                client.send(mic_in)
-    except socket.error as error:
-        print(str(error))
+
 
 
 if __name__ == '__main__':
@@ -48,3 +52,4 @@ if __name__ == '__main__':
 
 # TODO: Currently this is TCP, not UDP
 # TODO: Deal with multiple clients
+# TODO: Server should not have mic in, it should only receive and send

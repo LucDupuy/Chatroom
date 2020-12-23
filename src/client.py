@@ -1,7 +1,6 @@
 import socket
 import threading
 import tkinter.messagebox
-import voice_c as vc
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
@@ -31,12 +30,12 @@ def client():
                 server_sock.send(username.encode())
 
             elif msg == "VOICE":
-               vc.client()
+                pass
 
             else:
                 # Seeing what the server has to say
                 print(msg)
-        except:
+        except socket.error:
             server_sock.close()
             exit(0)
 
