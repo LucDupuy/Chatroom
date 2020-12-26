@@ -1,7 +1,7 @@
 import socket
 import threading
 import pyaudio
-# HOST = 0.0.0.0
+
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
 BUFFER_SIZE = 2048
