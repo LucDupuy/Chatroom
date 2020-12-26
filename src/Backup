@@ -1,0 +1,133 @@
+import socket
+import threading
+
+# HOST = 0.0.0.0
+HOST = socket.gethostbyname("ROGUEONE")
+PORT = 80
+BUFFER_SIZE = 2048
+
+
+clients = []
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind((HOST, PORT))
+
+
+
+def send_data_to_select_people(msg, idx):
+    for client in clients:
+     #   if clients.index(client) != idx:
+            client.send(msg)
+
+
+def handle(client):
+    while True:
+        try:
+            data = client.recv(BUFFER_SIZE)
+            send_data_to_select_people(data, clients.index(client))
+        except socket.error:
+            client_idx = clients.index(client)
+            del clients[client_idx]
+            client.close()
+            break
+
+def server():
+    while True:
+        try:
+            client, address = s.recvfrom(BUFFER_SIZE)
+            clients.append(client)
+            thread = threading.Thread(target=handle, args=(client,))
+            thread.start()
+        except socket.error as e:
+            print("Receiving: ", e)
+            pass
+
+
+
+
+
+
+if __name__ == '__main__':
+    server()
+
+# TODO: Currently this is TCP, not UDP
+# TODO: Deal with multiple clients
+# TODO: Server should not have mic in, it should only receive and send
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import socket
+import pyaudio
+import threading
+import tkinter.messagebox
+
+# HOST = socket.gethostbyname("ilkka.ddns.net")
+HOST = socket.gethostbyname("ROGUEONE")
+PORT = 80
+BUFFER_SIZE = 2048
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
+
+server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+p = pyaudio.PyAudio()
+in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, output=False, frames_per_buffer=BUFFER_SIZE)
+out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=False, output=True, frames_per_buffer=BUFFER_SIZE)
+
+
+try:
+    server_sock.connect((HOST, PORT))
+except:
+    root = tkinter.Tk()
+    root.overrideredirect(1)
+    root.withdraw()
+    tkinter.messagebox.showinfo("Error", "Server is offline")
+    exit(0)
+
+
+def client():
+    while True:
+        try:
+            msg = server_sock.recv(BUFFER_SIZE)
+            # Seeing what the server has to say
+            out_stream.write(msg)
+        except socket.error:
+            server_sock.close()
+            exit(0)
+
+
+def send_data():
+    while True:
+        try:
+            mic_in = in_stream.read(BUFFER_SIZE)
+            server_sock.sendto(mic_in, (HOST, PORT))
+        except socket.error as e:
+            server_sock.close()
+            print(e)
+            exit(0)
+
+
+read_thread = threading.Thread(target=client)
+read_thread.start()
+
+write_thread = threading.Thread(target=send_data)
+write_thread.start()
