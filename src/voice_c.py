@@ -9,9 +9,10 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 
-p = pyaudio.PyAudio()
-in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, output=False, frames_per_buffer=BUFFER_SIZE)
-out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=False, output=True, frames_per_buffer=BUFFER_SIZE)
+#p = pyaudio.PyAudio()
+#in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, output=False, frames_per_buffer=BUFFER_SIZE)
+#out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=False, output=True, frames_per_buffer=BUFFER_SIZE)
+
 client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
@@ -20,7 +21,7 @@ def send_data():
 
     while True:
         try:
-            msg = in_stream.read(BUFFER_SIZE)
+            msg = input()
             client_sock.sendto(msg.encode(), (HOST, PORT))
         except socket.error as e:
             client_sock.close()
