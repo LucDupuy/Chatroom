@@ -2,7 +2,9 @@ import pyaudio
 import wave
 import sounddevice as sd
 import numpy as np
+import socket
 
+print(socket.gethostbyname("ROGUEONE"))
 
 SAMPLES = 1024
 BIT_DEPTH = pyaudio.paInt16
@@ -10,6 +12,9 @@ CHANNELS = 1
 SAMPLE_FREQ = 44100
 SECONDS = 3
 FILENAME = "output.wav"
+
+
+
 
 
 def main():
