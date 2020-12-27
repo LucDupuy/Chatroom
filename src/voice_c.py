@@ -24,6 +24,18 @@ def record_voice(stream, CHUNK):
         frames.append(stream.read(CHUNK))
 
 
+
+def play(stream, CHUNK):
+    BUFFER = 10
+    while True:
+        if len(frames) == BUFFER:
+            while True:
+                try:
+                    stream.write(frames.pop(0), CHUNK)
+                except IndexError as e:
+                    pass
+
+
 if __name__ == "__main__":
     p = pyaudio.PyAudio()
     in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)

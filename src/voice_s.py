@@ -19,8 +19,8 @@ def udpStream(CHUNK):
     udp.bind((HOST, PORT))
 
     while True:
-        soundData, addr = udp.recvfrom(CHUNK * CHANNELS * 2)
-        frames.append(soundData)
+        voice_msg, _ = udp.recvfrom(CHUNK * CHANNELS * 2)
+        frames.append(voice_msg)
 
 
 def play(stream, CHUNK):
@@ -28,8 +28,10 @@ def play(stream, CHUNK):
     while True:
         if len(frames) == BUFFER:
             while True:
-                stream.write(frames.pop(0), CHUNK)
-
+                try:
+                    stream.write(frames.pop(0), CHUNK)
+                except IndexError as e:
+                    pass
 
 if __name__ == "__main__":
     p = pyaudio.PyAudio()
