@@ -8,7 +8,7 @@ PORT = 80
 
 FORMAT = pyaudio.paInt16
 BUFFER_SIZE = 1024
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 
 frames = []
@@ -33,14 +33,21 @@ def play(stream, CHUNK):
                 except IndexError as e:
                     pass
 
-if __name__ == "__main__":
+
+def main():
     p = pyaudio.PyAudio()
     out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
 
     socket_thread = Thread(target=udpStream, args=(BUFFER_SIZE,))
     sending_thread = Thread(target=play, args=(out_stream, BUFFER_SIZE,))
-    
+
     socket_thread.start()
     sending_thread.start()
     socket_thread.join()
     sending_thread.join()
+
+    print("Voice server starting")
+
+
+if __name__ == "__main__":
+    main()

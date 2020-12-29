@@ -2,13 +2,13 @@ import pyaudio
 import socket
 from threading import Thread
 
-#HOST = "192.168.2.106"
+# HOST = "192.168.2.106"
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
 
 BUFFER_SIZE = 1024
 FORMAT = pyaudio.paInt16
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 frames = []
 
@@ -20,10 +20,10 @@ def udp():
         if len(frames) > 0:
             sock.sendto(frames.pop(0), (HOST, PORT))
 
+
 def record_voice(stream, CHUNK):
     while True:
         frames.append(stream.read(CHUNK))
-
 
 
 def play(stream, CHUNK):
@@ -37,7 +37,7 @@ def play(stream, CHUNK):
                     pass
 
 
-if __name__ == "__main__":
+def main():
     p = pyaudio.PyAudio()
     in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
 
@@ -48,3 +48,7 @@ if __name__ == "__main__":
     socket_thread.start()
     rec_thread.join()
     socket_thread.join()
+
+
+if __name__ == '__main__':
+    main()

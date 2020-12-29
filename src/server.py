@@ -1,6 +1,7 @@
 import socket
 import threading
 from datetime import datetime
+import voice_c as vc
 
 # HOST = 0.0.0.0
 HOST = socket.gethostbyname("ROGUEONE")
@@ -42,7 +43,7 @@ def handle(client):
             if data.decode().__contains__("#users"):
                 send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
             elif data.decode().__contains__("#voice"):
-                client.send("VOICE".encode())
+                vc.main()
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
