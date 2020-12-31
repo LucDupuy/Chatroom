@@ -32,7 +32,8 @@ def send_data():
         sock.sendto(data, address)
 
 
-get_thread = Thread(target=get_data())
-send_thread = Thread(target=send_data())
-get_thread.start()
-send_thread.start()
+def main():
+    get_thread = Thread(target=get_data())
+    send_thread = Thread(target=send_data())
+    get_thread.start()
+    send_thread.start()
