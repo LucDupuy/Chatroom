@@ -1,5 +1,5 @@
-import pyaudio
 import socket
+import pyaudio
 from threading import Thread
 
 HOST = '0.0.0.0'
@@ -7,47 +7,32 @@ HOST = '0.0.0.0'
 PORT = 80
 
 FORMAT = pyaudio.paInt16
-BUFFER_SIZE = 1024
 CHANNELS = 1
-RATE = 44100
+RATE = RATE = 44100
 
-frames = []
+# Works better when server side buffer is larger?
+BUFFER_SIZE = 4096
+
+p = pyaudio.PyAudio()
+in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((HOST, PORT))
 
 
-def udpStream(CHUNK):
-    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp.bind((HOST, PORT))
-
+def get_data():
     while True:
-        voice_msg, _ = udp.recvfrom(CHUNK * CHANNELS * 2)
-        frames.append(voice_msg)
+        data, address = sock.recvfrom(BUFFER_SIZE)
+        in_stream.write(data)
 
 
-def play(stream, CHUNK):
-    BUFFER = 10
+def send_data():
     while True:
-        if len(frames) == BUFFER:
-            while True:
-                try:
-                    stream.write(frames.pop(0), CHUNK)
-                except IndexError as e:
-                    pass
+        data, address = sock.recvfrom(BUFFER_SIZE)
+        sock.sendto(data, address)
 
 
-def main():
-    p = pyaudio.PyAudio()
-    out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
-
-    socket_thread = Thread(target=udpStream, args=(BUFFER_SIZE,))
-    sending_thread = Thread(target=play, args=(out_stream, BUFFER_SIZE,))
-
-    socket_thread.start()
-    sending_thread.start()
-    socket_thread.join()
-    sending_thread.join()
-
-    print("Voice server starting")
-
-
-if __name__ == "__main__":
-    main()
+get_thread = Thread(target=get_data())
+send_thread = Thread(target=send_data())
+get_thread.start()
+send_thread.start()

@@ -1,54 +1,43 @@
-import pyaudio
 import socket
+import pyaudio
 from threading import Thread
 
-# HOST = "192.168.2.106"
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 80
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect((HOST, PORT))
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 2048
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
-frames = []
+
+p = pyaudio.PyAudio()
+in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=BUFFER_SIZE)
+out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
 
 
-def udp():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+def get_data():
     while True:
-        if len(frames) > 0:
-            sock.sendto(frames.pop(0), (HOST, PORT))
+        try:
+            data, server = s.recvfrom(BUFFER_SIZE)
+            in_stream.write(data)
+        except socket.error:
+            pass
 
 
-def record_voice(stream, CHUNK):
+def send_data():
     while True:
-        frames.append(stream.read(CHUNK))
+        try:
+            data = out_stream.read(BUFFER_SIZE)
+            s.sendto(data, (HOST, PORT))
+        except:
+            pass
 
 
-def play(stream, CHUNK):
-    BUFFER = 10
-    while True:
-        if len(frames) == BUFFER:
-            while True:
-                try:
-                    stream.write(frames.pop(0), CHUNK)
-                except IndexError as e:
-                    pass
+get_thread = Thread(target=get_data)
+send_thread = Thread(target=send_data)
 
+get_thread.start()
+send_thread.start()
 
-def main():
-    p = pyaudio.PyAudio()
-    in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE)
-
-    rec_thread = Thread(target=record_voice, args=(in_stream, BUFFER_SIZE,))
-    socket_thread = Thread(target=udp)
-
-    rec_thread.start()
-    socket_thread.start()
-    rec_thread.join()
-    socket_thread.join()
-
-
-if __name__ == '__main__':
-    main()
