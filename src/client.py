@@ -1,6 +1,7 @@
 import socket
 import threading
 import tkinter.messagebox
+import voice_c as vc
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
@@ -30,7 +31,9 @@ def client():
                 server_sock.send(username.encode())
 
             elif msg == "VOICE":
-                pass
+
+                # NOT SURE IF THIS WILL WORK
+                vc.main()
 
             else:
                 # Seeing what the server has to say
@@ -50,7 +53,6 @@ def send_data():
             server_sock.close()
             print("Server has gone offline")
             exit(0)
-
 
 
 read_thread = threading.Thread(target=client)

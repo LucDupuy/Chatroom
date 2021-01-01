@@ -43,6 +43,7 @@ def handle(client):
             if data.decode().__contains__("#users"):
                 send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
             elif data.decode().__contains__("#voice"):
+                send_data_to_select_people("VOICE".encode(), clients.index(client), only_current=True)
                 vs.main()
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
