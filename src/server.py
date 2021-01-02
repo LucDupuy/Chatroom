@@ -2,6 +2,7 @@ import socket
 import threading
 from datetime import datetime
 import voice_s as vs
+from threading import Thread
 
 # HOST = 0.0.0.0
 HOST = socket.gethostbyname("ROGUEONE")
@@ -44,7 +45,12 @@ def handle(client):
                 send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
             elif data.decode().__contains__("#voice"):
                 send_data_to_select_people("VOICE".encode(), clients.index(client), only_current=True)
-                vs.main()
+
+                voice_thread = Thread(target=vs.main)
+                voice_thread.start()
+
+            elif data.decode().__contains__("#stop_voice"):
+                send_data_to_select_people("STOP_VOICE".encode(), clients.index(client), only_current=True)
 
             elif data.decode().__contains__("#help"):
                 send_data_to_select_people(list_commands().encode(), clients.index(client), only_current=True)
@@ -88,6 +94,7 @@ def server():
 
 
         thread = threading.Thread(target=handle, args=(client,))
+        thread.daemon = True
         thread.start()
 
 

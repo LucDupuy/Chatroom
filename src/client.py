@@ -11,6 +11,8 @@ HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 
+VOICE_BOOL = False
+
 # IPV4, TCP
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -34,11 +36,22 @@ def client():
                 server_sock.send(username.encode())
 
             elif msg == "VOICE":
-                vc.main()
+                global VOICE_BOOL
+                if not VOICE_BOOL:
+                    vc.main()
+                    VOICE_BOOL = True
+                else:
+                    pass
+
+
+            elif msg == "STOP_VOICE":
+                print("TEST")
+                VOICE_BOOL = False
             else:
                 # Seeing what the server has to say
                 print(msg)
-        except socket.error:
+        except socket.error as e:
+            print(e)
             server_sock.close()
             exit(0)
 

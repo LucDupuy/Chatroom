@@ -24,7 +24,9 @@ def main():
 
 
     get_thread = Thread(target=get_data, args=(sock, in_stream))
+    get_thread.daemon = True
     send_thread = Thread(target=send_data, args=(sock, out_stream))
+    send_thread.daemon = True
 
     get_thread.start()
     send_thread.start()
@@ -36,7 +38,7 @@ def get_data(s, stream):
             data, server = s.recvfrom(BUFFER_SIZE_RECEIVE)
             stream.write(data)
         except socket.error as e:
-            print(e)
+          #  print(e)
             pass
 
 

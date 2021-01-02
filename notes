@@ -3,12 +3,8 @@ test using data so we can test the DDNS address
  -> Voice server can't have the same port?
 
 
- Need to be able to stop voice chat on your own with a command
+Need to be able to stop voice chat on your own with a command
 
+Send the voice only to other people, not yourself
 
- Send the voice only to other people, not yourself
-
-
- need to integrate voice as a background process
-
- error handeling
+clean up threads

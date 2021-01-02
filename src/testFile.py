@@ -1,4 +1,4 @@
-import socket
+import os
+cwd = os.getcwd()
 
-
-print(socket.gethostname())
+print(cwd)
