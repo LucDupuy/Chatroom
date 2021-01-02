@@ -1,11 +1,14 @@
 import socket
-import threading
+from threading import Thread
 import tkinter.messagebox
 import voice_c as vc
+import subprocess
+from multiprocessing import Process
+import sys
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
-PORT = 80
+PORT = 1127
 BUFFER_SIZE = 1024
 
 # IPV4, TCP
@@ -32,8 +35,6 @@ def client():
 
             elif msg == "VOICE":
 
-                # NOT SURE IF THIS WILL WORK
-                vc.main()
 
             else:
                 # Seeing what the server has to say
@@ -55,8 +56,8 @@ def send_data():
             exit(0)
 
 
-read_thread = threading.Thread(target=client)
+read_thread = Thread(target=client)
 read_thread.start()
 
-write_thread = threading.Thread(target=send_data)
+write_thread = Thread(target=send_data)
 write_thread.start()

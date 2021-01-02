@@ -5,7 +5,7 @@ import voice_s as vs
 
 # HOST = 0.0.0.0
 HOST = socket.gethostbyname("ROGUEONE")
-PORT = 80
+PORT = 1127
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 DATETIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -45,6 +45,10 @@ def handle(client):
             elif data.decode().__contains__("#voice"):
                 send_data_to_select_people("VOICE".encode(), clients.index(client), only_current=True)
                 vs.main()
+
+            elif data.decode().__contains__("#help"):
+                send_data_to_select_people(list_commands().encode(), clients.index(client), only_current=True)
+
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
@@ -67,6 +71,7 @@ def server():
         except:
             TIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             print("Keyboard Interruption: Server closing.\n" + TIME)
+            s.close()
             exit(0)
         try:
             username = client.recv(1024).decode()
@@ -78,8 +83,9 @@ def server():
         clients.append(client)
 
         send_data(f"{username} has joined the chat.".encode())
-
         send_data_to_select_people(list_online().encode(), clients.index(client), only_current=True)
+        send_data_to_select_people("Type #help for options\n".encode(), clients.index(client), only_current=True)
+
 
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
@@ -91,6 +97,17 @@ def list_online():
     data += "**********************\n"
     for username in usernames:
         data += username + "\n"
+
+    return data
+
+
+
+
+def list_commands():
+    data = ""
+    data += "\n#users -> List the users currently online"
+    data += "\n#voice -> Join the voice chat"
+    data += "\n#stop_voice -> Leave the voice chat\n"
 
     return data
 

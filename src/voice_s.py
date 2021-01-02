@@ -1,44 +1,31 @@
 import socket
-import pyaudio
+import sys
 from threading import Thread
 
 HOST = '0.0.0.0'
 # HOST = socket.gethostbyname("ROGUEONE")
-PORT = 80
-
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = RATE = 44100
+PORT = 1128
 
 # Works better when server side buffer is larger?
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 2048
 
 
 def main():
-    p = pyaudio.PyAudio()
-    in_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=-False, output=True, frames_per_buffer=BUFFER_SIZE)
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_sock.bind((HOST, PORT))
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind((HOST, PORT))
-
-    get_thread = Thread(target=get_data, args=(in_stream, sock, ))
-    send_thread = Thread(target=send_data, args=(sock, ))
-    get_thread.start()
-    send_thread.start()
-
-
-def get_data(stream, server_sock):
     while True:
-        data, address = server_sock.recvfrom(BUFFER_SIZE)
-        stream.write(data)
-
-
-def send_data(server_sock):
-    while True:
-        data, address = server_sock.recvfrom(BUFFER_SIZE)
-        server_sock.sendto(data, address)
+        try:
+            data, address = server_sock.recvfrom(BUFFER_SIZE)
+            server_sock.sendto(data, address)
+            #print(data)
+        except socket.error as e:
+            print(e)
+            server_sock.close()
+            exit(0)
 
 
 if __name__ == '__main__':
     main()
 
+# Do I need threads to receive from multiple clients?
