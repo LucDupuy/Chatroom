@@ -1,6 +1,5 @@
 import socket
 import pyaudio
-import sys
 from threading import Thread
 
 HOST = socket.gethostbyname("ROGUEONE")

@@ -34,8 +34,7 @@ def client():
                 server_sock.send(username.encode())
 
             elif msg == "VOICE":
-
-
+                vc.main()
             else:
                 # Seeing what the server has to say
                 print(msg)
