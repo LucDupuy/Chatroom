@@ -4,7 +4,7 @@ import tkinter.messagebox
 import voice_c as vc
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
-HOST = socket.gethostbyname("Thanos")
+HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 

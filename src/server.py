@@ -81,8 +81,10 @@ def handle(client, event):
 
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
-        except socket.error as e:
-            print(e)
+        except socket.error:
+            idx = clients.index(client)
+            user = usernames[idx]
+            print(f"{user} forcibly disconnected")
             remove_client(client)
             break
 
