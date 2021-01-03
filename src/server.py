@@ -147,7 +147,7 @@ def list_commands():
     data = ""
     data += "\n#users -> List the users currently online"
     data += "\n#voice -> Join the voice chat"
-    data += "\n#stop_voice -> Leave the voice chat\n"
+    data += "\n#stop_voice -> Leave the voice chat"
     data += "\n#exit -> Exit the voice chat"
 
     return data
