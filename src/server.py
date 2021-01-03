@@ -23,6 +23,14 @@ print("\nServer listening.....")
 
 
 def send_data_to_select_people(msg, idx, only_current):
+    """
+    Sends data to certain people depending on if only the current user needs to
+    see the information or if everyone should see it
+    :param msg: the message to be sent
+    :param idx: the index of the current client in the clients list
+    :param only_current: if we only want to send the message to the current user or not
+    """
+
     for client in clients:
         if only_current:
             if clients.index(client) == idx:
@@ -33,11 +41,22 @@ def send_data_to_select_people(msg, idx, only_current):
 
 
 def send_data(msg):
+    """
+    Send data to all the connected clients
+    :param msg: the message to send
+    """
     for client in clients:
         client.send(msg)
 
 
 def handle(client, event):
+    """
+    Depending on the information recieved from the client, the server will decide to send it
+    to certain people
+    :param client: the current client
+    :param event: the event handler for the main thread of the server
+    """
+
     while event.is_set():
         try:
             data = client.recv(BUFFER_SIZE)
@@ -62,12 +81,17 @@ def handle(client, event):
 
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
-        except:
+        except socket.error as e:
+            print(e)
             remove_client(client)
             break
 
 
 def server():
+    """
+    Initialize the main server and accept clients.
+    Initialize the thread for the handling the clients and their messages.
+    """
     while True:
         try:
             client, address = s.accept()
@@ -81,7 +105,8 @@ def server():
         try:
             username = client.recv(1024).decode()
             usernames.append(username)
-        except:
+        except socket.error as e:
+            print(e, "\n")
             print("User closed connection")
             continue
 
@@ -101,6 +126,10 @@ def server():
 
 
 def list_online():
+    """
+    Lists the users currently online
+    :return: the string of users
+    """
     data = ""
     data += "\nUsers Currently Online\n"
     data += "**********************\n"
@@ -111,6 +140,10 @@ def list_online():
 
 
 def list_commands():
+    """
+    Lists the commands that the user can use
+    :return: the string of commands
+    """
     data = ""
     data += "\n#users -> List the users currently online"
     data += "\n#voice -> Join the voice chat"
@@ -121,6 +154,10 @@ def list_commands():
 
 
 def remove_client(client):
+    """
+    Removes a client from the server
+    :param client: the client to remove
+    """
     client_idx = clients.index(client)
     del clients[client_idx]
     client.close()

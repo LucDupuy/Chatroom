@@ -10,23 +10,30 @@ BUFFER_SIZE = 1024
 
 VOICE_BOOL = False
 
-# IPV4, TCP
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+"""
+Checks to see if the server is online to connect to
+"""
 try:
     server_sock.connect((HOST, PORT))
-except:
+except socket.error:
     root = tkinter.Tk()
     root.overrideredirect(1)
     root.withdraw()
     tkinter.messagebox.showinfo("Error", "Server is offline")
     exit(0)
 
-#username = input("Please enter your username: ")
-username = "Luc"
+username = input("Please enter your username: ")
+
 
 
 def client(event):
+    """
+    Handles messages from the  server and starts the voice chat when prompted
+    :param event: the event used to gracefully kill threads
+    """
+
     while event.is_set():
         try:
             msg = server_sock.recv(BUFFER_SIZE).decode()
@@ -36,9 +43,7 @@ def client(event):
             elif msg == "VOICE":
                 global VOICE_BOOL
                 if not VOICE_BOOL:
-
                     get_event, send_event, get_thread, send_thread = vc.main()
-
                     VOICE_BOOL = True
                 else:
                     pass
@@ -66,6 +71,11 @@ def client(event):
 
 
 def send_data(event):
+    """
+    Sends messages to the server and checks to see if it has gone offline
+    :param event: the event used to gracefully kill threads
+    """
+
     while event.is_set():
         try:
             msg = username + ": " + input()
@@ -73,11 +83,15 @@ def send_data(event):
                 server_sock.send(msg.encode())
         except socket.error as e:
             server_sock.close()
+            print(e, "\n")
             print("Server has gone offline")
             exit(0)
 
 
-
+"""
+Starts the threads for sending and receiving data, as well as
+the events needed to kill the threads
+"""
 read_event = threading.Event()
 read_event.set()
 

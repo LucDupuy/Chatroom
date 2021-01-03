@@ -13,7 +13,14 @@ RATE = 44100
 
 MY_IP = socket.gethostbyname(socket.gethostname())
 
+
 def main():
+    """
+    Opens the socket and audio streams as well as starting the threads for sending and receiving data
+    and handling their events.
+    Threads set as daemon to run in the background and end properly when the program closes
+    """
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.connect((HOST, PORT))
 
@@ -40,7 +47,15 @@ def main():
     return get_event, send_event, get_thread, send_thread
 
 
+
 def get_data(s, stream, event):
+    """
+    Gets voice data from other users and does not play one's own voice back to them
+    :param s: the socket
+    :param stream: the audio stream to listen to
+    :param event: the event used to kill the thread
+    """
+
     while event.is_set():
         try:
             data, addr = s.recvfrom(BUFFER_SIZE_RECEIVE)
@@ -53,6 +68,13 @@ def get_data(s, stream, event):
 
 
 def send_data(s, stream, event):
+    """
+    Send voice data to all the connected users
+    :param s: the socket
+    :param stream: the audio stream to send
+    :param event: event used to kill the thread
+    """
+
     while event.is_set():
         try:
             data = stream.read(BUFFER_SIZE_SEND)
