@@ -1,6 +1,6 @@
 import socket
 import pyaudio
-from threading import Thread
+import threading
 
 HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1128
@@ -11,6 +11,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 
+MY_IP = socket.gethostbyname(socket.gethostname())
 
 def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,29 +22,38 @@ def main():
     out_stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=BUFFER_SIZE_SEND)
 
 
+    get_event = threading.Event()
+    get_event.set()
+
+    send_event = threading.Event()
+    send_event.set()
 
 
-    get_thread = Thread(target=get_data, args=(sock, in_stream))
+    get_thread = threading.Thread(target=get_data, args=(sock, in_stream, get_event))
     get_thread.daemon = True
-    send_thread = Thread(target=send_data, args=(sock, out_stream))
+    send_thread = threading.Thread(target=send_data, args=(sock, out_stream, send_event))
     send_thread.daemon = True
 
     get_thread.start()
     send_thread.start()
 
+    return get_event, send_event, get_thread, send_thread
 
-def get_data(s, stream):
-    while True:
+
+def get_data(s, stream, event):
+    while event.is_set():
         try:
-            data, server = s.recvfrom(BUFFER_SIZE_RECEIVE)
-            stream.write(data)
+            data, addr = s.recvfrom(BUFFER_SIZE_RECEIVE)
+
+            if addr[0] is MY_IP:
+                stream.write(data)
         except socket.error as e:
-          #  print(e)
+            print(e)
             pass
 
 
-def send_data(s, stream):
-    while True:
+def send_data(s, stream, event):
+    while event.is_set():
         try:
             data = stream.read(BUFFER_SIZE_SEND)
             s.sendto(data, (HOST, PORT))

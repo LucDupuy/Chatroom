@@ -37,8 +37,8 @@ def send_data(msg):
         client.send(msg)
 
 
-def handle(client):
-    while True:
+def handle(client, event):
+    while event.is_set():
         try:
             data = client.recv(BUFFER_SIZE)
             if data.decode().__contains__("#users"):
@@ -55,17 +55,15 @@ def handle(client):
             elif data.decode().__contains__("#help"):
                 send_data_to_select_people(list_commands().encode(), clients.index(client), only_current=True)
 
+            elif data.decode().__contains__("#exit"):
+                send_data_to_select_people("EXIT".encode(), clients.index(client), only_current=True)
+                remove_client(client)
+                break
+
             else:
                 send_data_to_select_people(data, clients.index(client), only_current=False)
         except:
-            client_idx = clients.index(client)
-            del clients[client_idx]
-            client.close()
-            username = usernames[client_idx]
-            data = f'{username} left the chat.'
-
-            send_data(data.encode())
-            del usernames[client_idx]
+            remove_client(client)
             break
 
 
@@ -74,9 +72,10 @@ def server():
         try:
             client, address = s.accept()
             client.send("USERNAME".encode())
-        except:
+        except socket.error as e:
             TIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             print("Keyboard Interruption: Server closing.\n" + TIME)
+            print("\n", e, "\n")
             s.close()
             exit(0)
         try:
@@ -93,7 +92,10 @@ def server():
         send_data_to_select_people("Type #help for options\n".encode(), clients.index(client), only_current=True)
 
 
-        thread = threading.Thread(target=handle, args=(client,))
+        server_thread_event = threading.Event()
+        server_thread_event.set()
+
+        thread = threading.Thread(target=handle, args=(client, server_thread_event))
         thread.daemon = True
         thread.start()
 
@@ -108,21 +110,26 @@ def list_online():
     return data
 
 
-
-
 def list_commands():
     data = ""
     data += "\n#users -> List the users currently online"
     data += "\n#voice -> Join the voice chat"
     data += "\n#stop_voice -> Leave the voice chat\n"
+    data += "\n#exit -> Exit the voice chat"
 
     return data
 
 
+def remove_client(client):
+    client_idx = clients.index(client)
+    del clients[client_idx]
+    client.close()
+    username = usernames[client_idx]
+    data = f'{username} left the chat.'
+
+    send_data(data.encode())
+    del usernames[client_idx]
+
+
 if __name__ == '__main__':
     server()
-
-# TODO: Implement Voice -> REMOVE ALL UDP FROM HERE AND USE SEPARATE PROGRAM
-# TODO: How to push updates?
-# TODO: Message from another shouldn't interrupt your typing
-# TODO: Suppress not a trusted source from windows

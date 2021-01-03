@@ -1,10 +1,7 @@
 import socket
-from threading import Thread
+import threading
 import tkinter.messagebox
 import voice_c as vc
-import subprocess
-from multiprocessing import Process
-import sys
 
 # HOST = socket.gethostbyname("ilkka.ddns.net")
 HOST = socket.gethostbyname("ROGUEONE")
@@ -25,11 +22,12 @@ except:
     tkinter.messagebox.showinfo("Error", "Server is offline")
     exit(0)
 
-username = input("Please enter your username: ")
+#username = input("Please enter your username: ")
+username = "Luc"
 
 
-def client():
-    while True:
+def client(event):
+    while event.is_set():
         try:
             msg = server_sock.recv(BUFFER_SIZE).decode()
             if msg == "USERNAME":
@@ -38,15 +36,26 @@ def client():
             elif msg == "VOICE":
                 global VOICE_BOOL
                 if not VOICE_BOOL:
-                    vc.main()
+
+                    get_event, send_event, get_thread, send_thread = vc.main()
+
                     VOICE_BOOL = True
                 else:
                     pass
-
-
             elif msg == "STOP_VOICE":
-                print("TEST")
+                get_event.clear()
+                send_event.clear()
+                get_thread.join()
+                send_thread.join()
                 VOICE_BOOL = False
+
+            elif msg == "EXIT":
+                print("You have disconnected from the server")
+                read_event.clear()
+                write_event.clear()
+                server_sock.close()
+                exit(0)
+
             else:
                 # Seeing what the server has to say
                 print(msg)
@@ -56,20 +65,27 @@ def client():
             exit(0)
 
 
-def send_data():
-    while True:
+def send_data(event):
+    while event.is_set():
         try:
             msg = username + ": " + input()
             if len(msg) > (len(username) + 2):
                 server_sock.send(msg.encode())
-        except:
+        except socket.error as e:
             server_sock.close()
             print("Server has gone offline")
             exit(0)
 
 
-read_thread = Thread(target=client)
+
+read_event = threading.Event()
+read_event.set()
+
+write_event = threading.Event()
+write_event.set()
+
+read_thread = threading.Thread(target=client, args=(read_event, ))
 read_thread.start()
 
-write_thread = Thread(target=send_data)
+write_thread = threading.Thread(target=send_data, args=(write_event, ))
 write_thread.start()

@@ -1,4 +1,4 @@
-import os
-cwd = os.getcwd()
+import subprocess
+import sys
 
-print(cwd)
+print(sys.executable)

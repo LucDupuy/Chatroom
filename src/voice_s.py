@@ -1,12 +1,8 @@
 import socket
-import sys
-from threading import Thread
 
 HOST = '0.0.0.0'
 # HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1128
-
-# Works better when server side buffer is larger?
 BUFFER_SIZE = 2048
 
 
@@ -27,5 +23,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# Do I need threads to receive from multiple clients?

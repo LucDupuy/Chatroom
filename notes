@@ -3,8 +3,6 @@ test using data so we can test the DDNS address
  -> Voice server can't have the same port?
 
 
-Need to be able to stop voice chat on your own with a command
-
-Send the voice only to other people, not yourself
-
-clean up threads
+# TODO: How to push updates?
+# TODO: Message from another shouldn't interrupt your typing
+# TODO: Suppress not a trusted source from windows
