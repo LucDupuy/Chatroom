@@ -1,4 +1,6 @@
-from distutils.core import setup
-import py2exe
+from cx_Freeze import setup, Executable
 
-setup(console=['client.py'])
+setup(
+    name='LukiChat',
+    version='1.0',
+    executables=[Executable("client.py")])

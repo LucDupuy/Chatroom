@@ -2,7 +2,19 @@ test using data so we can test the DDNS address
  -> Get port 80 working again
  -> Voice server can't have the same port?
 
+ -> Can we do it without 80 so that the calculator doesnt have to be 80?
+
 
 # TODO: How to push updates?
 # TODO: Message from another shouldn't interrupt your typing
 # TODO: Suppress not a trusted source from windows
+
+-> Mute (only stop one thread, and then restart it)
+   Or send the data with a boolean to check if its muted or not
+
+
+EXE
+***
+
+1. pyinstaller --onefile client.py creates the exe for both voice and text client
+2. run setup.py with build argument to get a larger folder of things

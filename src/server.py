@@ -74,6 +74,9 @@ def handle(client, event):
             elif data.decode().__contains__("#help"):
                 send_data_to_select_people(list_commands().encode(), clients.index(client), only_current=True)
 
+            elif data.decode().__contains__("#mute"):
+                send_data_to_select_people("MUTE".encode(), clients.index(client), only_current=True)
+
             elif data.decode().__contains__("#exit"):
                 send_data_to_select_people("EXIT".encode(), clients.index(client), only_current=True)
                 remove_client(client)
@@ -151,6 +154,7 @@ def list_commands():
     data += "\n#voice -> Join the voice chat"
     data += "\n#stop_voice -> Leave the voice chat"
     data += "\n#exit -> Exit the voice chat"
+    data += "\n#mute -> Mute and unmute yourself"
 
     return data
 

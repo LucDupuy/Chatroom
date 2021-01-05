@@ -1,14 +1,43 @@
 import socket
-import threading
 import tkinter.messagebox
 import voice_c as vc
+from esky import *
+import requests
+import webbrowser
 
-# HOST = socket.gethostbyname("ilkka.ddns.net")
-HOST = socket.gethostbyname("ROGUEONE")
+
+"""
+Prompts the user to update the app if an update is available
+"""
+###################################################################################################
+VERSION = "1.0"
+
+response = requests.get("https://ilkka.ddns.net/LukiChat/version.txt")
+data = response.text
+
+if data > VERSION:
+    root = tkinter.Tk()
+    root.overrideredirect(1)
+    root.withdraw()
+    response = tkinter.messagebox.askyesno("Update", "Update available, would you like to download?")
+
+    if response:
+        webbrowser.open("https://ilkka.ddns.net/LukiChat/")
+    else:
+        pass
+
+else:
+    pass
+###################################################################################################
+
+
+HOST = socket.gethostbyname("ilkka.ddns.net")
+#HOST = socket.gethostbyname("ROGUEONE")
 PORT = 1127
 BUFFER_SIZE = 1024
 
 VOICE_BOOL = False
+MUTE_BOOL = False
 
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -25,7 +54,6 @@ except socket.error:
     exit(0)
 
 username = input("Please enter your username: ")
-
 
 
 def client(event):
@@ -54,6 +82,10 @@ def client(event):
                 send_thread.join()
                 VOICE_BOOL = False
 
+            elif msg == "MUTE":
+
+                print("Muting and unmuting is not yet supported.")
+
             elif msg == "EXIT":
                 print("You have disconnected from the server")
                 read_event.clear()
@@ -79,6 +111,7 @@ def send_data(event):
     while event.is_set():
         try:
             msg = username + ": " + input()
+
             if len(msg) > (len(username) + 2):
                 server_sock.send(msg.encode())
         except socket.error as e:
@@ -98,8 +131,8 @@ read_event.set()
 write_event = threading.Event()
 write_event.set()
 
-read_thread = threading.Thread(target=client, args=(read_event, ))
+read_thread = threading.Thread(target=client, args=(read_event,))
 read_thread.start()
 
-write_thread = threading.Thread(target=send_data, args=(write_event, ))
+write_thread = threading.Thread(target=send_data, args=(write_event,))
 write_thread.start()
