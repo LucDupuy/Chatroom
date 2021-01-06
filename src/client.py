@@ -15,6 +15,7 @@ VERSION = "1.0"
 response = requests.get("https://ilkka.ddns.net/LukiChat/version.txt")
 data = response.text
 
+print("Checking for update...")
 if data > VERSION:
     root = tkinter.Tk()
     root.overrideredirect(1)
@@ -27,13 +28,14 @@ if data > VERSION:
         pass
 
 else:
+    print("No Update")
     pass
 ###################################################################################################
 
 
-HOST = socket.gethostbyname("ilkka.ddns.net")
-#HOST = socket.gethostbyname("ROGUEONE")
-PORT = 1127
+#HOST = socket.gethostbyname("ilkka.ddns.net")
+HOST = socket.gethostbyname("Thanos")
+PORT = 80
 BUFFER_SIZE = 1024
 
 VOICE_BOOL = False
