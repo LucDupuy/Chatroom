@@ -2,7 +2,7 @@ import socket
 
 HOST = '0.0.0.0'
 # HOST = socket.gethostbyname("ROGUEONE")
-PORT = 1128
+PORT = 80
 BUFFER_SIZE = 2048
 
 

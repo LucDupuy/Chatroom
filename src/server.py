@@ -6,7 +6,7 @@ from threading import Thread
 
 # HOST = 0.0.0.0
 HOST = socket.gethostbyname("ROGUEONE")
-PORT = 1127
+PORT = 80
 NUM_CONNECTIONS = 5
 BUFFER_SIZE = 1024
 DATETIME = datetime.now().strftime("%d/%m/%Y %H:%M:%S")

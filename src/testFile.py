@@ -1,26 +1,33 @@
 import requests
 import tkinter.messagebox
 import webbrowser
+import pynput
 
-VERSION = "0.5"
+from pynput import keyboard
 
-response = requests.get("https://ilkka.ddns.net/LukiChat/version.txt")
-data = response.text
+text = ""
+def on_press(key):
+    try:
+        text = key.char
 
-if data > VERSION:
-    root = tkinter.Tk()
-    root.overrideredirect(1)
-    root.withdraw()
-    response = tkinter.messagebox.askyesno("Update", "Update available, would you like to download?")
+        if key.char == "q":
+            print(text)
 
-    if response:
-        webbrowser.open("https://ilkka.ddns.net/LukiChat/")
-    else:
+        #special keys
+    except AttributeError:
         pass
 
-else:
-    pass
 
+
+# Collect events until released
+with keyboard.Listener(
+        on_press=on_press,  suppress=True) as listener:
+    listener.join()
+
+# ...or, in a non-blocking fashion:
+listener = keyboard.Listener(
+    on_press=on_press,  suppress=True)
+listener.start()
 
 # https://ilkka.ddns.net/LukiChat/version.txt
 # http://192.168.2.239/LukiChat/version.txt

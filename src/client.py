@@ -12,10 +12,12 @@ Prompts the user to update the app if an update is available
 ###################################################################################################
 VERSION = "1.0"
 
+print("Checking for update...")
+
 response = requests.get("https://ilkka.ddns.net/LukiChat/version.txt")
 data = response.text
 
-print("Checking for update...")
+
 if data > VERSION:
     root = tkinter.Tk()
     root.overrideredirect(1)
@@ -33,8 +35,8 @@ else:
 ###################################################################################################
 
 
-#HOST = socket.gethostbyname("ilkka.ddns.net")
-HOST = socket.gethostbyname("Thanos")
+HOST = socket.gethostbyname("ilkka.ddns.net")
+#HOST = socket.gethostbyname("Thanos")
 PORT = 80
 BUFFER_SIZE = 1024
 

@@ -1,12 +1,8 @@
 test using data so we can test the DDNS address
- -> Get port 80 working again
+ -> Get SOME PORT working
  -> Voice server can't have the same port?
 
- -> Can we do it without 80 so that the calculator doesnt have to be 80?
 
-
-# TODO: How to push updates?
-# TODO: Message from another shouldn't interrupt your typing
 # TODO: Suppress not a trusted source from windows
 
 -> Mute (only stop one thread, and then restart it)
