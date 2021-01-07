@@ -2,7 +2,7 @@ import socket
 import pyaudio
 import threading
 
-HOST = socket.gethostbyname("ROGUEONE")
+HOST = socket.gethostbyname("ilkka.ddns.net")
 PORT = 80
 
 BUFFER_SIZE_SEND = 1024
@@ -60,7 +60,7 @@ def get_data(s, stream, event):
         try:
             data, addr = s.recvfrom(BUFFER_SIZE_RECEIVE)
 
-            if addr[0] is not MY_IP:
+            if addr[0] is MY_IP:
                 stream.write(data)
         except socket.error as e:
             print(e)
